@@ -3,7 +3,7 @@ from typing import Optional
 from enum import Enum, auto
 import copy
 from utils import get_input_lines
-from advent6a import Direction
+from advent6a import Direction, make_map, execute_patrol
 
 guard_state = {
     'position': None,
@@ -32,7 +32,7 @@ class Cell:
     def is_obstacle(self) -> bool:
         return self.current_state in ('#', 'O')
 
-def make_map(input_data):
+def make_map_b(input_data):
     direction_chars = {
         '^': Direction.NORTH,
         '>': Direction.EAST,
@@ -69,8 +69,6 @@ def guard_on_map(guard_map):
     }
 
     return boundary_checks[direction]
-
-from enum import Enum, auto
 
 class PatrolState(Enum):
     CONTINUE = auto()
@@ -135,7 +133,7 @@ def guard_in_loop(guard_map):
         return True
     return False
 
-def execute_patrol(guard_map):
+def execute_patrol_b(guard_map):
     state = PatrolState.CONTINUE
     while state == PatrolState.CONTINUE:
         state = move_guard(guard_map)
@@ -151,24 +149,27 @@ def print_map(guard_map):
     print("----------")
 
 if __name__ == "__main__":
-    test = True
+    test = False
     input_data = get_input_lines('6', test)
     rows, cols = len(input_data), len(input_data[0])
+
+    # identify spots visited in the original path
+    original_guard_map = make_map(input_data)
+    execute_patrol(original_guard_map)
+
     obstacles = 0
-    base_map = make_map(input_data)
+    base_map = make_map_b(input_data)
     initial_guard_state = guard_state.copy()
 
     for row in range(rows):
         for col in range(cols):
-            if not test:
-                print(f"{row} : {col}")
-            if input_data[row][col] == ".":
-                guard_state.update(initial_guard_state)
-                guard_map = copy.deepcopy(base_map)
-                guard_map[row][col].current_state = "O"
-                guard_map[row][col].path_marker = "O"
-
-                result = execute_patrol(guard_map)
-                if result == PatrolState.LOOP_DETECTED:
-                    obstacles += 1
+            if original_guard_map[row][col] == "X": # only check spots if the guard visited them in the original
+                if input_data[row][col] == ".":
+                    guard_state.update(initial_guard_state)
+                    guard_map = copy.deepcopy(base_map)
+                    guard_map[row][col].current_state = "O"
+                    guard_map[row][col].path_marker = "O"
+                    result = execute_patrol_b(guard_map)
+                    if result == PatrolState.LOOP_DETECTED:
+                        obstacles += 1
     print(f"Obstacles: {obstacles}")
