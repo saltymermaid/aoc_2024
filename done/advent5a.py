@@ -1,6 +1,5 @@
-from utils import get_input_lines
-
 from collections import defaultdict
+from utils import get_input_lines
 
 def get_rules(raw_data):
     rules = defaultdict(list)
