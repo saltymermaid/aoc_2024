@@ -1,10 +1,10 @@
+import math
 from utils import get_input_lines
 from advent7a import parse_input, add, multiply
 
 def concat(x, y):
-    str_x = str(x)
-    str_y = str(y)
-    return int(str_x + str_y)
+    num_digits = math.floor(math.log10(y)+1)
+    return (x * (10 ** num_digits)) + y
 
 def can_reach_target(operators):
     target, numbers = operators
