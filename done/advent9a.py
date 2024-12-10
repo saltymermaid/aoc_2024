@@ -27,32 +27,28 @@ def swap(empty_idx, full_idx, disk):
     disk[full_idx] = "."
     return disk
 
-def free_space_is_contiguous(disk):
-    data = True
+def count_free_space(disk):
+    free = 0
     for block in disk:
-        if data:
-            if block == ".":
-                data = False
-        else:
-            if block != ".":
-                return False
-    return True
+        free += block == "."
+    return free
 
-def fix_free_space(disk):
+def fix_free_space(disk, free_spots):
     def get_last_full_block(disk):
         for block_idx, block in enumerate(reversed(disk)):
             if block == ".":
                 pass
             else:
                 return len(disk) - block_idx - 1
-            
+
     def get_first_empty_block(disk):
         for block_idx, block in enumerate(disk):
             if block == ".":
                 return block_idx
             else:
                 pass
-    while not free_space_is_contiguous(disk):
+
+    for _free_spot in range(free_spots):
         first = get_first_empty_block(disk)
         last = get_last_full_block(disk)
         disk = swap(first, last, disk)
@@ -66,8 +62,8 @@ def calculate_checksum(disk):
         checksum += block_idx * block
 
 if __name__ == "__main__":
-    test = False
+    test = True
     input_data = get_input_lines('9', test)
     disk = (create_disk(input_data[0]))
-    cleaned = fix_free_space(disk)
+    cleaned = fix_free_space(disk, count_free_space(disk))
     print(calculate_checksum(cleaned))
