@@ -18,5 +18,5 @@ def get_input_string(puzzle, test):
         data_type = "data"
     filename = f"advent{puzzle}_{data_type}.txt"
     with open(filename) as f:
-        test_data = f.read()
+        test_data = f.read().strip()
     return test_data
